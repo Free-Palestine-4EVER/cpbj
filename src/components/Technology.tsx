@@ -1,15 +1,45 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useSpring } from "framer-motion";
 import { technology } from "@/lib/content";
 import { SectionHead } from "./ui";
 import { Reveal, RevealGroup, RevealItem } from "./Reveal";
 
+function Cross() {
+  return (
+    <svg viewBox="0 0 16 16" className="h-3 w-3 shrink-0 text-[#a39d8e]" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M4 4l8 8M12 4l-8 8" />
+    </svg>
+  );
+}
+
+function Check() {
+  return (
+    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0 text-ember" fill="none" stroke="currentColor" strokeWidth="2.2">
+      <motion.path
+        d="M3 8.5l3.5 3.5L13 4"
+        initial={{ pathLength: 0 }}
+        whileInView={{ pathLength: 1 }}
+        viewport={{ once: true, margin: "-12% 0px" }}
+        transition={{ duration: 0.5, ease: "easeOut", delay: 0.3 }}
+      />
+    </svg>
+  );
+}
+
 export default function Technology() {
+  const duelRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: duelRef,
+    offset: ["start 0.85", "end 0.55"],
+  });
+  const draw = useSpring(scrollYProgress, { stiffness: 80, damping: 24 });
+
   return (
     <section
       id="technology"
-      className="relative scroll-mt-24 bg-paper py-28 text-ink md:py-36"
+      className="relative scroll-mt-24 overflow-hidden bg-paper py-28 text-ink md:py-36"
     >
       {/* faint blueprint on paper */}
       <div
@@ -36,65 +66,89 @@ export default function Technology() {
           tone="paper"
         />
 
-        <Reveal delay={0.1}>
-          <div className="mt-14 overflow-hidden rounded-2xl border border-[var(--line-paper)] bg-[#f4f2eb]">
-            <RevealGroup stagger={0.06}>
-              {/* header */}
-              <div className="grid grid-cols-[1.2fr_1fr_1.1fr] border-b border-[var(--line-paper)] bg-[#eae7df]">
-                <div className="px-3 py-4 mono text-[0.62rem] uppercase tracking-[0.16em] text-mute-paper md:px-7">
-                  Metric
-                </div>
-                <div className="px-3 py-4 mono text-[0.62rem] uppercase tracking-[0.16em] text-mute-paper md:px-7">
-                  Traditional Wet Mix
-                </div>
-                <div className="flex items-center gap-2 border-l-2 border-ember bg-ember/[0.07] px-3 py-4 md:px-7">
-                  <span className="h-1.5 w-1.5 rounded-full bg-ember" />
-                  <span className="mono text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-ink">
-                    JDCO Semi-Dry
-                  </span>
-                </div>
-              </div>
-
-              {/* rows */}
-              {technology.rows.map((r) => (
-                <RevealItem
-                  key={r.metric}
-                  className="grid grid-cols-[1.2fr_1fr_1.1fr] border-b border-[var(--line-paper)] transition-colors duration-300 last:border-0 hover:bg-[#eeebe2]"
-                >
-                  <div className="px-3 py-5 text-[0.95rem] font-semibold text-ink md:px-7">
-                    {r.metric}
-                  </div>
-                  <div className="px-3 py-5 text-[0.92rem] font-light text-mute-paper md:px-7">
-                    {r.traditional}
-                  </div>
-                  <div className="flex items-center gap-2.5 border-l-2 border-ember bg-ember/[0.05] px-3 py-5 md:px-7">
-                    <svg
-                      viewBox="0 0 16 16"
-                      className="h-3.5 w-3.5 shrink-0 text-ember"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <motion.path
-                        d="M3 8.5l3.5 3.5L13 4"
-                        initial={{ pathLength: 0 }}
-                        whileInView={{ pathLength: 1 }}
-                        viewport={{ once: true, margin: "-15% 0px" }}
-                        transition={{ duration: 0.55, ease: "easeOut", delay: 0.25 }}
-                      />
-                    </svg>
-                    <span className="text-[0.92rem] font-medium text-ink">
-                      {r.jdco}
-                    </span>
-                  </div>
-                </RevealItem>
-              ))}
-            </RevealGroup>
+        {/* the duel — two engineering plates around a scroll-drawn center rail */}
+        <div ref={duelRef} className="relative mt-16">
+          <div className="absolute bottom-0 left-1/2 top-0 hidden w-px -translate-x-1/2 bg-[var(--line-paper)] md:block" />
+          <motion.div
+            style={{ scaleY: draw }}
+            className="absolute bottom-0 left-1/2 top-0 hidden w-px -translate-x-1/2 origin-top bg-ember md:block"
+          />
+          <div className="absolute left-1/2 top-1/2 z-10 hidden h-13 w-13 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-ember bg-paper p-4 md:flex">
+            <span className="mono text-[0.72rem] font-bold tracking-[0.1em] text-ember">
+              VS
+            </span>
           </div>
-        </Reveal>
+
+          <div className="grid gap-5 md:grid-cols-2 md:gap-12">
+            {/* legacy plate */}
+            <Reveal variant="wipe">
+              <div className="h-full rounded-2xl border border-[var(--line-paper)] bg-[#eae7df] p-7 md:p-9">
+                <div className="mono text-[0.6rem] uppercase tracking-[0.24em] text-mute-paper">
+                  Legacy Method
+                </div>
+                <h3 className="display mt-3 text-[1.6rem] font-bold text-[#5b574c]">
+                  Traditional Wet Mix
+                </h3>
+                <RevealGroup className="mt-8" stagger={0.07}>
+                  {technology.rows.map((r, i) => (
+                    <RevealItem
+                      key={r.metric}
+                      y={16}
+                      className="border-t border-[var(--line-paper)] py-5"
+                    >
+                      <div className="mono flex items-center justify-between text-[0.58rem] uppercase tracking-[0.18em] text-[#a39d8e]">
+                        <span>
+                          M-{String(i + 1).padStart(2, "0")} · {r.metric}
+                        </span>
+                        <Cross />
+                      </div>
+                      <div className="mt-2 text-[1rem] font-light text-mute-paper">
+                        {r.traditional}
+                      </div>
+                    </RevealItem>
+                  ))}
+                </RevealGroup>
+              </div>
+            </Reveal>
+
+            {/* JDCO plate */}
+            <Reveal variant="wipe" delay={0.12}>
+              <div className="relative h-full rounded-2xl border-2 border-ember bg-[#f7f5ee] p-7 shadow-[0_36px_80px_-36px_rgba(199,157,6,0.55)] md:p-9">
+                <span className="mono absolute -top-3 right-7 rotate-2 rounded-full border border-ember bg-ember px-3.5 py-1 text-[0.56rem] font-bold uppercase tracking-[0.16em] text-[#131313]">
+                  Field-proven ◆ 3,500 T/Day
+                </span>
+                <div className="mono text-[0.6rem] uppercase tracking-[0.24em] text-ember">
+                  The JDCO Standard
+                </div>
+                <h3 className="display mt-3 text-[1.6rem] font-bold text-ink">
+                  Semi-Dry Technology
+                </h3>
+                <RevealGroup className="mt-8" stagger={0.07}>
+                  {technology.rows.map((r, i) => (
+                    <RevealItem
+                      key={r.metric}
+                      y={16}
+                      className="border-t border-[#e3d9b8] py-5"
+                    >
+                      <div className="mono flex items-center justify-between text-[0.58rem] uppercase tracking-[0.18em] text-[#8a7c45]">
+                        <span>
+                          M-{String(i + 1).padStart(2, "0")} · {r.metric}
+                        </span>
+                        <Check />
+                      </div>
+                      <div className="mt-2 text-[1rem] font-semibold text-ink">
+                        {r.jdco}
+                      </div>
+                    </RevealItem>
+                  ))}
+                </RevealGroup>
+              </div>
+            </Reveal>
+          </div>
+        </div>
 
         <Reveal delay={0.1}>
-          <p className="mono mt-6 text-[0.74rem] leading-relaxed text-mute-paper">
+          <p className="mono mt-8 text-[0.74rem] leading-relaxed text-mute-paper">
             // Zero-slump, end-pressed units leave the mold structurally rigid —
             enabling immediate reuse and the throughput that traditional wet-cast
             lines cannot match.

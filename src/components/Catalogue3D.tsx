@@ -71,8 +71,9 @@ function PipeModel({ progress }: { progress: Prog }) {
     ];
   }, []);
   useMaterialize(progress, solid, wire);
-  useFrame((_, dt) => {
-    if (spin.current) spin.current.rotation.y += dt * 0.5;
+  // rotation is a pure function of scroll — scrub down, it turns; stop, it stops
+  useFrame(() => {
+    if (spin.current) spin.current.rotation.y = progress.current * Math.PI * 2.5;
   });
   return (
     <group ref={spin} rotation={[0, 0, Math.PI / 2]}>
@@ -124,8 +125,8 @@ function CulvertModel({ progress }: { progress: Prog }) {
     return g;
   }, []);
   useMaterialize(progress, solid, wire);
-  useFrame((_, dt) => {
-    if (spin.current) spin.current.rotation.y += dt * 0.45;
+  useFrame(() => {
+    if (spin.current) spin.current.rotation.y = 0.7 + progress.current * Math.PI * 2.5;
   });
   return (
     <group ref={spin} rotation={[0.1, 0.5, 0]}>
@@ -159,8 +160,8 @@ function ManholeModel({ progress }: { progress: Prog }) {
     ];
   }, []);
   useMaterialize(progress, solid, wire);
-  useFrame((_, dt) => {
-    if (spin.current) spin.current.rotation.y += dt * 0.4;
+  useFrame(() => {
+    if (spin.current) spin.current.rotation.y = 1.4 + progress.current * Math.PI * 2.5;
   });
   return (
     <group ref={spin}>
@@ -192,7 +193,12 @@ function Carousel({ progress, light }: { progress: Prog; light: boolean }) {
   const R = 2.5;
   useFrame((state, dt) => {
     if (!ring.current) return;
-    ring.current.rotation.y += dt * 0.12 + progress.current * 0.012;
+    // the turntable is SCRUBBED by scroll: p≈0.15 → pipe front, p≈0.5 →
+    // culvert, p≈0.85 → manhole. Damped toward the target so wheel/touch
+    // scrolling feels weighted, never autonomous.
+    const target = -progress.current * ((Math.PI * 4) / 3) * 1.18;
+    ring.current.rotation.y +=
+      (target - ring.current.rotation.y) * Math.min(1, dt * 6);
     ring.current.position.x = 0.85;
     ring.current.position.y = -0.5 + Math.sin(state.clock.elapsedTime * 0.4) * 0.04;
   });
