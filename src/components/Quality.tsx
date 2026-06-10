@@ -1,8 +1,32 @@
 "use client";
 
+import Image from "next/image";
 import { quality } from "@/lib/content";
 import { SectionHead } from "./ui";
 import { Reveal, RevealGroup, RevealItem } from "./Reveal";
+
+/* the REAL ISO 9001:2015 certificate (InterCert), scraped from jdco.com.sa */
+function CertCard() {
+  return (
+    <a
+      href="/photos/iso-cert.png"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group relative block w-40 rotate-[2.5deg] overflow-hidden rounded-lg border border-[var(--line-strong)] bg-white shadow-[0_22px_55px_-18px_rgba(0,0,0,0.65)] transition-transform duration-500 hover:rotate-0 hover:scale-[1.05] sm:w-44"
+    >
+      <Image
+        src="/photos/iso-cert.png"
+        alt="JDCO ISO 9001:2015 certificate of registration issued by InterCert"
+        width={419}
+        height={588}
+        className="w-full"
+      />
+      <span className="mono absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-3 pb-2 pt-9 text-[0.52rem] uppercase tracking-[0.14em] text-white/90">
+        The actual certificate ◆ InterCert
+      </span>
+    </a>
+  );
+}
 
 function IsoBadge() {
   return (
@@ -60,7 +84,10 @@ export default function Quality() {
             max="max-w-2xl"
           />
           <Reveal delay={0.1}>
-            <IsoBadge />
+            <div className="flex items-end gap-7">
+              <IsoBadge />
+              <CertCard />
+            </div>
           </Reveal>
         </div>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { products, sectors, type SectorKey } from "@/lib/content";
 import { SectionHead } from "./ui";
 import { Reveal, RevealGroup, RevealItem } from "./Reveal";
@@ -63,10 +64,24 @@ export default function Products() {
           {products.items.map((p, i) => (
             <RevealItem key={p.id}>
               <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--line)] bg-surface p-8 transition-colors duration-500 hover:border-[var(--line-strong)]">
+                {/* real product photo from the JDCO yard */}
+                <div className="relative -mx-8 -mt-8 mb-7 aspect-[16/9] overflow-hidden border-b border-[var(--line)]">
+                  <Image
+                    src={`/photos/products/${p.id}.jpg`}
+                    alt={`${p.name} — JDCO yard, Riyadh`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-surface)]/70 via-transparent to-transparent" />
+                  <span className="mono absolute right-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[0.54rem] uppercase tracking-[0.14em] text-white/85">
+                    From the yard
+                  </span>
+                </div>
                 {/* faint glyph backdrop */}
                 <Glyph
                   id={p.id}
-                  className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 text-blueprint opacity-[0.07] transition-all duration-700 group-hover:opacity-[0.14] group-hover:rotate-12"
+                  className="pointer-events-none absolute -right-8 top-24 h-40 w-40 text-blueprint opacity-[0.07] transition-all duration-700 group-hover:opacity-[0.14] group-hover:rotate-12"
                 />
                 <div className="relative flex items-center justify-between">
                   <Glyph id={p.id} className="h-11 w-11 text-ember" />

@@ -11,6 +11,7 @@ import Products from "@/components/Products";
 import Showcase from "@/components/Showcase";
 import Technology from "@/components/Technology";
 import Quality from "@/components/Quality";
+import Film from "@/components/Film";
 import Timeline from "@/components/Timeline";
 import Impact from "@/components/Impact";
 import Partners from "@/components/Partners";
@@ -33,6 +34,7 @@ export default function Home() {
       <Showcase />
       <Technology />
       <Quality />
+      <Film />
       <Timeline />
       <Impact />
       <Partners />
